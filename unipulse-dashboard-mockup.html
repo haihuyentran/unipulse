@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniPulse — Monash University Social Listening Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy: #1B2A4A;
+    --navy-light: #2A3D63;
+    --blue: #0077B6;
+    --blue-soft: #E6F3FA;
+    --bg: #F6F7F9;
+    --panel: #FFFFFF;
+    --border: #E7E9EE;
+    --text: #1B2A4A;
+    --text-dim: #6B7688;
+    --text-faint: #9AA3B2;
+    --positive: #2ECC71;
+    --positive-bg: #E9FBF1;
+    --negative: #E74C3C;
+    --negative-bg: #FDECEA;
+    --neutral: #95A5A6;
+    --neutral-bg: #F1F2F3;
+    --radius: 14px;
+    --shadow: 0 1px 2px rgba(27,42,74,0.04), 0 8px 24px -12px rgba(27,42,74,0.10);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    font-size:14px;
+    line-height:1.45;
+  }
+  .mono{font-family:'JetBrains Mono',monospace;}
+  a{color:inherit;}
+  .app{max-width:1400px;margin:0 auto;padding:0 28px 60px;}
+
+  /* ---------- HEADER ---------- */
+  header.topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 28px;
+    background:var(--panel);
+    border-bottom:1px solid var(--border);
+    position:sticky;top:0;z-index:50;
+  }
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand .mark{
+    width:36px;height:36px;border-radius:10px;
+    background:linear-gradient(155deg, var(--navy) 0%, var(--blue) 130%);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .brand .mark svg{width:20px;height:20px;}
+  .brand .word{display:flex;flex-direction:column;line-height:1.1;}
+  .brand .word .product{font-weight:800;font-size:17px;letter-spacing:-0.01em;color:var(--navy);}
+  .brand .word .org{font-size:11px;color:var(--text-faint);font-weight:600;letter-spacing:.04em;text-transform:uppercase;}
+
+  .daterange{
+    display:flex;align-items:center;gap:8px;
+    background:var(--bg);border:1px solid var(--border);
+    padding:8px 14px;border-radius:10px;
+    font-weight:600;font-size:13px;color:var(--navy);
+    cursor:pointer;user-select:none;
+  }
+  .daterange svg{width:14px;height:14px;color:var(--text-dim);}
+  .daterange .chev{width:10px;height:10px;color:var(--text-faint);margin-left:2px;}
+
+  .topbar-right{display:flex;align-items:center;gap:14px;}
+  .icon-btn{
+    width:36px;height:36px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    background:transparent;border:1px solid transparent;
+    cursor:pointer;position:relative;color:var(--text-dim);
+  }
+  .icon-btn:hover{background:var(--bg);border-color:var(--border);}
+  .icon-btn svg{width:18px;height:18px;}
+  .dot-badge{
+    position:absolute;top:6px;right:7px;width:8px;height:8px;border-radius:50%;
+    background:var(--negative);border:2px solid var(--panel);
+  }
+  .avatar{
+    width:34px;height:34px;border-radius:50%;
+    background:linear-gradient(135deg,#0077B6,#1B2A4A);
+    color:#fff;font-weight:700;font-size:12px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .btn-primary{
+    background:var(--navy);color:#fff;border:none;
+    padding:9px 16px;border-radius:10px;font-weight:600;font-size:13px;
+    display:flex;align-items:center;gap:7px;cursor:pointer;
+  }
+  .btn-primary:hover{background:var(--navy-light);}
+  .btn-primary svg{width:14px;height:14px;}
+
+  /* ---------- WHAT'S NEW TOAST ---------- */
+  .whats-new{
+    max-width:1400px;margin:16px auto 0;padding:0 28px;
+  }
+  .toast{
+    display:flex;align-items:center;gap:10px;
+    background:var(--navy);color:#fff;
+    padding:10px 16px;border-radius:10px;font-size:13px;font-weight:500;
+    box-shadow:var(--shadow);
+  }
+  .toast .pulse{
+    width:8px;height:8px;border-radius:50%;background:#FF6B6B;flex-shrink:0;
+    box-shadow:0 0 0 0 rgba(255,107,107,.6);
+    animation:pulse 1.8s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(255,107,107,.55);}
+    70%{box-shadow:0 0 0 8px rgba(255,107,107,0);}
+    100%{box-shadow:0 0 0 0 rgba(255,107,107,0);}
+  }
+  .toast b{font-weight:700;}
+  .toast .close{margin-left:auto;opacity:.6;cursor:pointer;font-size:16px;line-height:1;}
+
+  /* ---------- FILTER BAR ---------- */
+  .filterbar{
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    margin:20px 0 4px;
+  }
+  .filterbar .label{font-size:12px;font-weight:700;color:var(--text-faint);text-transform:uppercase;letter-spacing:.04em;margin-right:2px;}
+  .chip{
+    display:flex;align-items:center;gap:6px;
+    background:var(--panel);border:1px solid var(--border);
+    padding:7px 12px;border-radius:999px;font-size:12.5px;font-weight:600;color:var(--navy);
+    cursor:pointer;
+  }
+  .chip svg{width:11px;height:11px;color:var(--text-faint);}
+  .chip.active{background:var(--blue-soft);border-color:#BFE1F2;color:var(--blue);}
+  .spacer{flex:1;}
+  .link-btn{
+    font-size:12.5px;font-weight:700;color:var(--blue);cursor:pointer;
+    display:flex;align-items:center;gap:5px;
+  }
+  .link-btn svg{width:13px;height:13px;}
+
+  /* ---------- SECTION TITLES ---------- */
+  .section-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px;}
+  .section-head h2{font-size:15px;font-weight:700;margin:0;color:var(--navy);}
+  .section-head .sub{font-size:12px;color:var(--text-faint);font-weight:500;}
+
+  /* ---------- KPI ROW ---------- */
+  .kpi-row{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:22px 0;
+  }
+  .kpi{
+    background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+    padding:18px 20px;box-shadow:var(--shadow);
+    display:flex;flex-direction:column;gap:8px;
+  }
+  .kpi .kpi-top{display:flex;align-items:center;justify-content:space-between;}
+  .kpi .kpi-label{font-size:12px;font-weight:600;color:var(--text-dim);}
+  .kpi .kpi-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--blue-soft);color:var(--blue);}
+  .kpi .kpi-icon svg{width:15px;height:15px;}
+  .kpi .kpi-value{font-size:28px;font-weight:800;letter-spacing:-0.02em;color:var(--navy);}
+  .kpi .kpi-trend{font-size:12px;font-weight:700;display:flex;align-items:center;gap:4px;}
+  .kpi .kpi-trend.up{color:var(--positive);}
+  .kpi .kpi-trend.down{color:var(--negative);}
+  .kpi .kpi-trend svg{width:11px;height:11px;}
+  .kpi .kpi-trend .vs{color:var(--text-faint);font-weight:500;}
+  .bar-track{height:6px;border-radius:4px;background:var(--neutral-bg);overflow:hidden;}
+  .bar-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#2ECC71,#27AE60);}
+  .concern-pill{
+    display:inline-flex;align-items:center;gap:6px;background:var(--negative-bg);color:var(--negative);
+    padding:4px 10px;border-radius:999px;font-size:11.5px;font-weight:700;width:fit-content;
+  }
+  .concern-pill svg{width:10px;height:10px;}
+
+  /* ---------- MAIN GRID ---------- */
+  .main-grid{display:grid;grid-template-columns:1.35fr 1fr;gap:18px;margin-top:6px;}
+  .col{display:flex;flex-direction:column;gap:18px;}
+  .card{
+    background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+    padding:20px 22px;box-shadow:var(--shadow);
+  }
+  .insight-strip{
+    display:flex;gap:10px;align-items:flex-start;
+    background:var(--blue-soft);border:1px solid #D3EAF5;border-radius:10px;
+    padding:11px 14px;margin-top:14px;font-size:12.5px;color:var(--navy);
+  }
+  .insight-strip .badge{
+    flex-shrink:0;background:var(--blue);color:#fff;font-size:10px;font-weight:800;
+    padding:3px 7px;border-radius:5px;letter-spacing:.03em;margin-top:1px;
+  }
+  .insight-strip b{font-weight:700;}
+
+  /* sentiment chart */
+  .legend{display:flex;gap:16px;font-size:12px;color:var(--text-dim);font-weight:600;}
+  .legend .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;}
+  .chart-wrap{position:relative;margin-top:10px;}
+  .annotation{
+    position:absolute;top:8px;left:47%;
+    background:var(--navy);color:#fff;font-size:11px;font-weight:600;
+    padding:6px 10px;border-radius:8px;white-space:nowrap;
+    box-shadow:var(--shadow);
+  }
+  .annotation:after{
+    content:"";position:absolute;bottom:-5px;left:14px;
+    width:9px;height:9px;background:var(--navy);transform:rotate(45deg);
+  }
+
+  /* trending topics */
+  .topic-row{display:grid;grid-template-columns:150px 1fr 44px;align-items:center;gap:12px;margin:13px 0;}
+  .topic-row .name{font-size:12.5px;font-weight:600;color:var(--navy);}
+  .topic-track{height:10px;background:var(--neutral-bg);border-radius:5px;overflow:hidden;}
+  .topic-fill{height:100%;border-radius:5px;}
+  .topic-row .count{font-size:12px;font-weight:700;color:var(--text-dim);text-align:right;}
+
+  /* competitor radar */
+  .radar-legend{display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:14px;}
+  .radar-legend .item{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--text-dim);}
+  .radar-legend .swatch{width:10px;height:10px;border-radius:3px;}
+
+  /* pain points */
+  .pain-item{
+    display:flex;gap:10px;padding:11px 0;border-bottom:1px solid var(--border);
+  }
+  .pain-item:last-of-type{border-bottom:none;padding-bottom:2px;}
+  .pain-item .num{
+    width:20px;height:20px;border-radius:6px;background:var(--blue-soft);color:var(--blue);
+    font-size:10.5px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
+  }
+  .pain-item .txt{font-size:12.5px;color:var(--navy);font-weight:500;}
+  .pain-item .txt .meta{display:block;color:var(--text-faint);font-weight:600;font-size:11px;margin-top:2px;}
+  .sentiment-tag{
+    display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;
+  }
+
+  /* ---------- BOTTOM: FEED + AI PANEL ---------- */
+  .bottom-grid{display:grid;grid-template-columns:1fr 320px;gap:18px;margin-top:18px;}
+  .feed-tabs{display:flex;gap:6px;margin-bottom:14px;}
+  .feed-tab{
+    padding:6px 13px;border-radius:8px;font-size:12px;font-weight:700;color:var(--text-dim);
+    background:var(--bg);cursor:pointer;
+  }
+  .feed-tab.active{background:var(--navy);color:#fff;}
+  .feed-list{max-height:430px;overflow-y:auto;padding-right:4px;}
+  .feed-list::-webkit-scrollbar{width:6px;}
+  .feed-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .mention{
+    display:flex;gap:12px;padding:14px 4px;border-bottom:1px solid var(--border);
+  }
+  .mention:last-child{border-bottom:none;}
+  .source-icon{
+    width:34px;height:34px;border-radius:9px;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;
+  }
+  .mention-body{flex:1;min-width:0;}
+  .mention-top{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;}
+  .mention-source{font-size:12px;font-weight:700;color:var(--navy);}
+  .mention-time{font-size:11px;color:var(--text-faint);font-weight:500;}
+  .sentiment-icon{
+    width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .sentiment-icon svg{width:9px;height:9px;}
+  .mention-text{font-size:12.5px;color:var(--text);line-height:1.5;margin:0 0 8px;}
+  .mention-actions{display:flex;gap:8px;}
+  .mini-btn{
+    font-size:11px;font-weight:700;padding:5px 10px;border-radius:7px;cursor:pointer;
+    border:1px solid var(--border);color:var(--text-dim);background:var(--panel);
+    display:flex;align-items:center;gap:5px;
+  }
+  .mini-btn.respond{color:var(--blue);border-color:#BFE1F2;background:var(--blue-soft);}
+  .mini-btn svg{width:11px;height:11px;}
+
+  .ai-panel{
+    background:linear-gradient(165deg, var(--navy) 0%, #16233F 100%);
+    border-radius:var(--radius);padding:22px;color:#fff;
+    display:flex;flex-direction:column;gap:14px;height:fit-content;
+    box-shadow:var(--shadow);
+  }
+  .ai-panel .ai-head{display:flex;align-items:center;gap:8px;}
+  .ai-panel .ai-icon{
+    width:26px;height:26px;border-radius:8px;background:rgba(255,255,255,.12);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .ai-panel .ai-icon svg{width:14px;height:14px;color:#8FD3FF;}
+  .ai-panel .ai-title{font-size:12px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;color:#8FD3FF;}
+  .ai-panel .ai-text{font-size:13.5px;line-height:1.6;color:#EAF0F8;}
+  .ai-panel .ai-text b{color:#fff;}
+  .ai-stat-row{display:flex;gap:10px;}
+  .ai-stat{
+    flex:1;background:rgba(255,255,255,.07);border-radius:10px;padding:12px;
+  }
+  .ai-stat .v{font-size:20px;font-weight:800;}
+  .ai-stat .l{font-size:10.5px;color:#AAB8CE;font-weight:600;margin-top:2px;}
+  .ai-cta{
+    background:#fff;color:var(--navy);border:none;border-radius:9px;
+    padding:10px;font-size:12.5px;font-weight:700;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:6px;margin-top:2px;
+  }
+  .ai-cta svg{width:13px;height:13px;}
+
+  .create-alert-row{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-top:18px;background:var(--panel);border:1px solid var(--border);
+    border-radius:var(--radius);padding:16px 22px;box-shadow:var(--shadow);
+  }
+  .create-alert-row .left{display:flex;align-items:center;gap:12px;}
+  .create-alert-row .ic{
+    width:38px;height:38px;border-radius:10px;background:var(--blue-soft);color:var(--blue);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .create-alert-row .ic svg{width:18px;height:18px;}
+  .create-alert-row .t{font-size:13px;font-weight:700;color:var(--navy);}
+  .create-alert-row .d{font-size:12px;color:var(--text-faint);margin-top:1px;}
+  .btn-outline{
+    background:var(--panel);color:var(--navy);border:1.5px solid var(--border);
+    padding:9px 16px;border-radius:10px;font-weight:700;font-size:12.5px;cursor:pointer;
+  }
+
+  @media (max-width: 1100px){
+    .main-grid, .bottom-grid{grid-template-columns:1fr;}
+    .kpi-row{grid-template-columns:repeat(2,1fr);}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="mark">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="3.4" stroke="white" stroke-width="1.8"/></svg>
+    </div>
+    <div class="word">
+      <span class="product">UniPulse</span>
+      <span class="org">Monash University</span>
+    </div>
+  </div>
+
+  <div class="daterange">
+    <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    Last 30 Days
+    <svg class="chev" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+
+  <div class="topbar-right">
+    <div class="icon-btn"><span class="dot-badge"></span>
+      <svg viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.7 21a2 2 0 01-3.4 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </div>
+    <button class="btn-primary">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v13m0 0l-4-4m4 4l4-4M4 21h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Export Report
+    </button>
+    <div class="avatar">SM</div>
+  </div>
+</header>
+
+<div class="whats-new">
+  <div class="toast">
+    <span class="pulse"></span>
+    <span><b>What's new:</b> Sentiment dropped 5% in the last hour — spike in visa-related mentions from Reddit.</span>
+    <span class="close">✕</span>
+  </div>
+</div>
+
+<div class="app">
+
+  <!-- FILTER BAR -->
+  <div class="filterbar">
+    <span class="label">Filters</span>
+    <div class="chip active">All Regions <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="chip">China · India · SE Asia <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="chip">All Sources <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="chip">Language: English <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    <div class="spacer"></div>
+    <div class="link-btn">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7M16 6l-4-4-4 4M12 2v13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Share Dashboard
+    </div>
+  </div>
+
+  <!-- KPI ROW -->
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-top">
+        <span class="kpi-label">Total Mentions</span>
+        <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="kpi-value">4,287</div>
+      <div class="kpi-trend up">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M5 15l7-7 7 7" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        +12% <span class="vs">vs last period</span>
+      </div>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi-top">
+        <span class="kpi-label">Sentiment Score</span>
+        <div class="kpi-icon" style="background:var(--positive-bg);color:var(--positive);"><svg viewBox="0 0 24 24" fill="none"><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/></svg></div>
+      </div>
+      <div class="kpi-value">72% <span style="font-size:13px;font-weight:700;color:var(--positive);">Positive</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:72%;"></div></div>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi-top">
+        <span class="kpi-label">Int'l Student Share of Voice</span>
+        <div class="kpi-icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 3a9 9 0 010 18" stroke="currentColor" stroke-width="1.8"/></svg></div>
+      </div>
+      <div class="kpi-value">34%</div>
+      <div class="kpi-trend up"><span class="vs">vs UoM 29% · UNSW 22% · USyd 15%</span></div>
+    </div>
+
+    <div class="kpi">
+      <div class="kpi-top">
+        <span class="kpi-label">Top Concern</span>
+        <div class="kpi-icon" style="background:var(--negative-bg);color:var(--negative);"><svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.3 3.9L2.5 17.5A1.6 1.6 0 003.9 20h16.2a1.6 1.6 0 001.4-2.5L13.7 3.9a1.6 1.6 0 00-2.4 0z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div class="concern-pill">
+        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/></svg>
+        Visa Processing
+      </div>
+      <div class="kpi-trend" style="color:var(--text-faint);font-weight:600;">45 mentions this period</div>
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+    <!-- LEFT COLUMN -->
+    <div class="col">
+
+      <!-- Sentiment over time -->
+      <div class="card">
+        <div class="section-head">
+          <h2>Sentiment Over Time</h2>
+          <div class="legend">
+            <span><span class="dot" style="background:var(--positive);"></span>Positive</span>
+            <span><span class="dot" style="background:var(--negative);"></span>Negative</span>
+          </div>
+        </div>
+        <div class="chart-wrap">
+          <div class="annotation">Visa policy change announced</div>
+          <svg viewBox="0 0 560 190" width="100%" height="190" style="overflow:visible;">
+            <line x1="0" y1="20" x2="560" y2="20" stroke="#F0F1F4" stroke-width="1"/>
+            <line x1="0" y1="60" x2="560" y2="60" stroke="#F0F1F4" stroke-width="1"/>
+            <line x1="0" y1="100" x2="560" y2="100" stroke="#F0F1F4" stroke-width="1"/>
+            <line x1="0" y1="140" x2="560" y2="140" stroke="#F0F1F4" stroke-width="1"/>
+            <line x1="264" y1="10" x2="264" y2="170" stroke="#BFE1F2" stroke-width="1.5" stroke-dasharray="3 4"/>
+            <polyline points="0,110 40,102 80,108 120,95 160,100 200,90 240,96 264,60 300,50 340,45 380,55 420,40 460,44 500,30 560,26"
+              fill="none" stroke="#2ECC71" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="0,150 40,148 80,152 120,146 160,150 200,145 240,148 264,112 300,120 340,128 380,122 420,132 460,130 500,138 560,140"
+              fill="none" stroke="#E74C3C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="264" cy="112" r="4.5" fill="#E74C3C"/>
+            <circle cx="264" cy="60" r="4.5" fill="#2ECC71"/>
+          </svg>
+          <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--text-faint);font-weight:600;margin-top:4px;">
+            <span>Jul 25</span><span>Aug 1</span><span>Aug 8</span><span style="color:var(--blue);">Aug 12</span><span>Aug 18</span><span>Aug 23</span>
+          </div>
+        </div>
+        <div class="insight-strip">
+          <span class="badge">INSIGHT</span>
+          <span>Negative sentiment spiked <b>40%</b> on Aug 12 following visa processing delays. Consider proactive communication with prospective students.</span>
+        </div>
+      </div>
+
+      <!-- Trending topics -->
+      <div class="card">
+        <div class="section-head">
+          <h2>Top Trending Topics</h2>
+          <span class="sub">By mention volume · coloured by sentiment</span>
+        </div>
+
+        <div class="topic-row">
+          <span class="name">Visa Processing</span>
+          <div class="topic-track"><div class="topic-fill" style="width:100%;background:var(--negative);"></div></div>
+          <span class="count">45</span>
+        </div>
+        <div class="topic-row">
+          <span class="name">Scholarships</span>
+          <div class="topic-track"><div class="topic-fill" style="width:71%;background:var(--positive);"></div></div>
+          <span class="count">32</span>
+        </div>
+        <div class="topic-row">
+          <span class="name">Campus Safety</span>
+          <div class="topic-track"><div class="topic-fill" style="width:62%;background:var(--neutral);"></div></div>
+          <span class="count">28</span>
+        </div>
+        <div class="topic-row">
+          <span class="name">Course Quality</span>
+          <div class="topic-track"><div class="topic-fill" style="width:56%;background:var(--positive);"></div></div>
+          <span class="count">25</span>
+        </div>
+        <div class="topic-row">
+          <span class="name">Accommodation Cost</span>
+          <div class="topic-track"><div class="topic-fill" style="width:49%;background:var(--negative);"></div></div>
+          <span class="count">22</span>
+        </div>
+
+        <div class="insight-strip">
+          <span class="badge">INSIGHT</span>
+          <span>Scholarships are trending positively. Highlight scholarship opportunities in upcoming marketing campaigns.</span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="col">
+
+      <!-- Competitor comparison -->
+      <div class="card">
+        <div class="section-head">
+          <h2>Competitor Comparison</h2>
+          <span class="sub">4 metrics</span>
+        </div>
+
+        <svg viewBox="0 0 260 240" width="100%" height="240">
+          <!-- grid rings -->
+          <polygon points="130,20 220,80 190,190 70,190 40,80" fill="none" stroke="#EEF0F3" stroke-width="1"/>
+          <polygon points="130,52 189,93 168,155 92,155 71,93" fill="none" stroke="#EEF0F3" stroke-width="1"/>
+          <polygon points="130,84 158,106 146,140 114,140 102,106" fill="none" stroke="#EEF0F3" stroke-width="1"/>
+          <!-- axes -->
+          <line x1="130" y1="120" x2="130" y2="20" stroke="#EEF0F3"/>
+          <line x1="130" y1="120" x2="220" y2="80" stroke="#EEF0F3"/>
+          <line x1="130" y1="120" x2="190" y2="190" stroke="#EEF0F3"/>
+          <line x1="130" y1="120" x2="70" y2="190" stroke="#EEF0F3"/>
+          <line x1="130" y1="120" x2="40" y2="80" stroke="#EEF0F3"/>
+
+          <!-- Monash -->
+          <polygon points="130,28 205,84 172,172 88,168 55,90" fill="#0077B6" fill-opacity="0.18" stroke="#0077B6" stroke-width="2.2"/>
+          <!-- UoM -->
+          <polygon points="130,45 180,90 160,150 105,155 75,100" fill="#1B2A4A" fill-opacity="0.10" stroke="#1B2A4A" stroke-width="1.6" stroke-dasharray="4 3"/>
+          <!-- UNSW -->
+          <polygon points="130,60 165,95 150,145 112,140 92,102" fill="#95A5A6" fill-opacity="0.08" stroke="#95A5A6" stroke-width="1.4" stroke-dasharray="2 3"/>
+
+          <text x="130" y="12" text-anchor="middle" font-size="9.5" font-weight="700" fill="#6B7688">Sentiment</text>
+          <text x="228" y="80" text-anchor="start" font-size="9.5" font-weight="700" fill="#6B7688">Volume</text>
+          <text x="192" y="205" text-anchor="middle" font-size="9.5" font-weight="700" fill="#6B7688">Share of Voice</text>
+          <text x="68" y="205" text-anchor="middle" font-size="9.5" font-weight="700" fill="#6B7688">Int'l Interest</text>
+          <text x="32" y="80" text-anchor="end" font-size="9.5" font-weight="700" fill="#6B7688">Growth</text>
+        </svg>
+
+        <div class="radar-legend">
+          <span class="item"><span class="swatch" style="background:#0077B6;"></span>Monash</span>
+          <span class="item"><span class="swatch" style="background:#1B2A4A;"></span>Univ. of Melbourne</span>
+          <span class="item"><span class="swatch" style="background:#95A5A6;"></span>UNSW</span>
+        </div>
+
+        <div class="insight-strip">
+          <span class="badge">INSIGHT</span>
+          <span>Monash leads in sentiment (<b>+8%</b> vs UoM) but lags in mention volume. Increase visibility in key international markets.</span>
+        </div>
+      </div>
+
+      <!-- Pain points -->
+      <div class="card">
+        <div class="section-head">
+          <h2>Int'l Student Pain Points</h2>
+          <span class="sub">AI-generated · last 7 days</span>
+        </div>
+
+        <div class="pain-item">
+          <div class="num">1</div>
+          <div class="txt">Visa processing delays<span class="meta"><span class="sentiment-tag" style="background:var(--negative);"></span>42 mentions, mostly negative</span></div>
+        </div>
+        <div class="pain-item">
+          <div class="num">2</div>
+          <div class="txt">Accommodation availability near Clayton campus<span class="meta"><span class="sentiment-tag" style="background:var(--neutral);"></span>28 mentions, mixed</span></div>
+        </div>
+        <div class="pain-item">
+          <div class="num">3</div>
+          <div class="txt">Scholarship application deadlines<span class="meta"><span class="sentiment-tag" style="background:var(--positive);"></span>19 mentions, mostly positive</span></div>
+        </div>
+
+        <div class="insight-strip">
+          <span class="badge">INSIGHT</span>
+          <span>Create a dedicated "Visa Support" page and promote it to prospective students.</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CREATE ALERT ROW -->
+  <div class="create-alert-row">
+    <div class="left">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.7 21a2 2 0 01-3.4 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+      <div>
+        <div class="t">Set up a keyword alert</div>
+        <div class="d">Get notified the moment "visa", "scholarship" or "accommodation" spikes in mentions.</div>
+      </div>
+    </div>
+    <button class="btn-outline">+ Create Alert</button>
+  </div>
+
+  <!-- BOTTOM: FEED + AI PANEL -->
+  <div class="bottom-grid">
+    <div class="card">
+      <div class="section-head">
+        <h2>Real-Time Mention Feed</h2>
+        <span class="sub">Updated 2 min ago</span>
+      </div>
+      <div class="feed-tabs">
+        <div class="feed-tab active">All Sources</div>
+        <div class="feed-tab">Reddit</div>
+        <div class="feed-tab">X / Twitter</div>
+        <div class="feed-tab">Forums</div>
+        <div class="feed-tab">News</div>
+      </div>
+
+      <div class="feed-list">
+        <div class="mention">
+          <div class="source-icon" style="background:#FF4500;">R</div>
+          <div class="mention-body">
+            <div class="mention-top">
+              <span class="mention-source">r/StudyInAustralia</span>
+              <span class="mention-time">18 min ago</span>
+              <span class="sentiment-icon" style="background:var(--negative-bg);"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="#E74C3C" stroke-width="3" stroke-linecap="round"/></svg></span>
+            </div>
+            <p class="mention-text">Anyone else still waiting on their student visa decision for Monash's Feb intake? It's been 9 weeks and the uncertainty is stressful.</p>
+            <div class="mention-actions">
+              <div class="mini-btn respond"><svg viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.4 8.4 0 01-9.5 8.3A8.5 8.5 0 013 11.5 8.4 8.4 0 0111.5 3a8.4 8.4 0 019.5 8.5z" stroke="currentColor" stroke-width="1.8"/></svg>Respond</div>
+              <div class="mini-btn"><svg viewBox="0 0 24 24" fill="none"><path d="M4 4v16M4 4h13l-2.5 4L17 12H4" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>Flag</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mention">
+          <div class="source-icon" style="background:#0077B6;">X</div>
+          <div class="mention-body">
+            <div class="mention-top">
+              <span class="mention-source">@futurestudent_in</span>
+              <span class="mention-time">41 min ago</span>
+              <span class="sentiment-icon" style="background:var(--positive-bg);"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#2ECC71" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+            <p class="mention-text">Got my Monash scholarship offer today!! Genuinely didn't expect the support team to reply this fast. So relieved 🎉</p>
+            <div class="mention-actions">
+              <div class="mini-btn respond"><svg viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.4 8.4 0 01-9.5 8.3A8.5 8.5 0 013 11.5 8.4 8.4 0 0111.5 3a8.4 8.4 0 019.5 8.5z" stroke="currentColor" stroke-width="1.8"/></svg>Respond</div>
+              <div class="mini-btn"><svg viewBox="0 0 24 24" fill="none"><path d="M4 4v16M4 4h13l-2.5 4L17 12H4" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>Flag</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mention">
+          <div class="source-icon" style="background:#1B2A4A;">F</div>
+          <div class="mention-body">
+            <div class="mention-top">
+              <span class="mention-source">The PIE News</span>
+              <span class="mention-time">1 hr ago</span>
+              <span class="sentiment-icon" style="background:var(--neutral-bg);"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14" stroke="#95A5A6" stroke-width="3" stroke-linecap="round"/></svg></span>
+            </div>
+            <p class="mention-text">Australian universities brace for slower visa processing times ahead of the 2027 intake cycle, industry body warns.</p>
+            <div class="mention-actions">
+              <div class="mini-btn respond"><svg viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.4 8.4 0 01-9.5 8.3A8.5 8.5 0 013 11.5 8.4 8.4 0 0111.5 3a8.4 8.4 0 019.5 8.5z" stroke="currentColor" stroke-width="1.8"/></svg>Respond</div>
+              <div class="mini-btn"><svg viewBox="0 0 24 24" fill="none"><path d="M4 4v16M4 4h13l-2.5 4L17 12H4" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>Flag</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mention">
+          <div class="source-icon" style="background:#FF4500;">R</div>
+          <div class="mention-body">
+            <div class="mention-top">
+              <span class="mention-source">r/MonashUni</span>
+              <span class="mention-time">2 hr ago</span>
+              <span class="sentiment-icon" style="background:var(--negative-bg);"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="#E74C3C" stroke-width="3" stroke-linecap="round"/></svg></span>
+            </div>
+            <p class="mention-text">Struggling to find affordable accommodation near Clayton for semester 2 — rent has gone up a lot compared to last year.</p>
+            <div class="mention-actions">
+              <div class="mini-btn respond"><svg viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.4 8.4 0 01-9.5 8.3A8.5 8.5 0 013 11.5 8.4 8.4 0 0111.5 3a8.4 8.4 0 019.5 8.5z" stroke="currentColor" stroke-width="1.8"/></svg>Respond</div>
+              <div class="mini-btn"><svg viewBox="0 0 24 24" fill="none"><path d="M4 4v16M4 4h13l-2.5 4L17 12H4" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>Flag</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mention">
+          <div class="source-icon" style="background:#0077B6;">X</div>
+          <div class="mention-body">
+            <div class="mention-top">
+              <span class="mention-source">@parent_of_2027</span>
+              <span class="mention-time">3 hr ago</span>
+              <span class="sentiment-icon" style="background:var(--positive-bg);"><svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#2ECC71" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+            <p class="mention-text">Monash's international student support staff answered every question we had within a day. Really reassuring as a parent.</p>
+            <div class="mention-actions">
+              <div class="mini-btn respond"><svg viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.4 8.4 0 01-9.5 8.3A8.5 8.5 0 013 11.5 8.4 8.4 0 0111.5 3a8.4 8.4 0 019.5 8.5z" stroke="currentColor" stroke-width="1.8"/></svg>Respond</div>
+              <div class="mini-btn"><svg viewBox="0 0 24 24" fill="none"><path d="M4 4v16M4 4h13l-2.5 4L17 12H4" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>Flag</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI INSIGHT PANEL -->
+    <div class="ai-panel">
+      <div class="ai-head">
+        <div class="ai-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2l1.8 5.6L19 9l-5.2 1.4L12 16l-1.8-5.6L5 9l5.2-1.4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+        <span class="ai-title">AI Insight</span>
+      </div>
+      <p class="ai-text"><b>73%</b> of international students discussing Monash mention "supportive staff" positively. Leverage this in your next email campaign to accepted students.</p>
+
+      <div class="ai-stat-row">
+        <div class="ai-stat">
+          <div class="v">73%</div>
+          <div class="l">Praise "staff support"</div>
+        </div>
+        <div class="ai-stat">
+          <div class="v">+8pts</div>
+          <div class="l">Sentiment vs UoM</div>
+        </div>
+      </div>
+
+      <button class="ai-cta">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 4v16M4 4h13l-2.5 4L17 12H4" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+        Draft campaign copy
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // date range dropdown (visual only)
+  document.querySelector('.daterange').addEventListener('click', function(){
+    this.style.borderColor = '#0077B6';
+    setTimeout(()=>{ this.style.borderColor = ''; }, 300);
+  });
+
+  // filter chip toggling
+  document.querySelectorAll('.chip').forEach(chip=>{
+    chip.addEventListener('click', ()=> chip.classList.toggle('active'));
+  });
+
+  // feed tab switching
+  document.querySelectorAll('.feed-tab').forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      document.querySelectorAll('.feed-tab').forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+
+  // dismiss toast
+  const toastClose = document.querySelector('.toast .close');
+  if(toastClose){
+    toastClose.addEventListener('click', ()=>{
+      document.querySelector('.whats-new').style.display = 'none';
+    });
+  }
+</script>
+
+</body>
+</html>
