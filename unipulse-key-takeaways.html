@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UniPulse — Key Takeaways</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy: #0F2747;
+    --navy-light: #1B3A63;
+    --blue: #0077B6;
+    --blue-soft: #E6F3FA;
+    --blue-border: #BFE1F2;
+    --bg: #F8F9FA;
+    --panel: #FFFFFF;
+    --border: #E7E9EE;
+    --text: #16223A;
+    --text-dim: #647089;
+    --text-faint: #9AA3B2;
+    --high-bg:#FDECEA; --high-text:#D64550;
+    --med-bg:#FEF3E2; --med-text:#C4831A;
+    --low-bg:#E9FBF1; --low-text:#28A667;
+    --radius: 14px;
+    --shadow: 0 1px 2px rgba(15,39,71,0.04), 0 8px 22px -14px rgba(15,39,71,0.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    font-size:14px;line-height:1.45;
+  }
+  *:focus-visible{outline:2px solid var(--blue);outline-offset:2px;}
+
+  /* ===================== LAYOUT ===================== */
+  .shell{display:flex;min-height:100vh;}
+
+  /* ===================== SIDEBAR ===================== */
+  .sidebar{
+    width:264px;flex-shrink:0;background:var(--navy);color:#fff;
+    display:flex;flex-direction:column;padding:22px 18px;position:sticky;top:0;height:100vh;
+  }
+  .logo-row{display:flex;align-items:center;gap:11px;padding:2px 6px 20px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:20px;}
+  .logo-row svg{width:34px;height:34px;flex-shrink:0;}
+  .logo-row .lt{line-height:1.15;}
+  .logo-row .lt .l1{font-weight:800;font-size:15.5px;letter-spacing:.01em;}
+  .logo-row .lt .l2{font-weight:600;font-size:11.5px;letter-spacing:.06em;color:#A9B7CC;margin-top:-2px;}
+
+  .product-block{padding:0 6px 22px;}
+  .product-block .name{font-size:19px;font-weight:800;letter-spacing:-.01em;}
+  .product-block .desc{font-size:12px;color:#A9B7CC;margin-top:5px;line-height:1.5;font-weight:500;}
+
+  nav.side-nav{display:flex;flex-direction:column;gap:2px;flex:1;}
+  .nav-item{
+    display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:9px;
+    color:#B9C4D6;font-weight:600;font-size:13.5px;cursor:pointer;
+  }
+  .nav-item svg{width:18px;height:18px;flex-shrink:0;}
+  .nav-item:hover{background:rgba(255,255,255,.06);color:#fff;}
+  .nav-item.active{background:var(--blue);color:#fff;}
+
+  .sidebar-bottom{display:flex;flex-direction:column;gap:12px;padding-top:14px;}
+  .create-alert-btn{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    background:transparent;border:1.5px solid rgba(255,255,255,.18);color:#fff;
+    padding:11px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;
+  }
+  .create-alert-btn:hover{background:rgba(255,255,255,.06);}
+  .create-alert-btn svg{width:15px;height:15px;}
+  .help-card{
+    background:rgba(255,255,255,.06);border-radius:12px;padding:14px;
+  }
+  .help-card .t{font-size:13px;font-weight:700;color:#fff;display:flex;align-items:center;gap:7px;}
+  .help-card .t svg{width:15px;height:15px;color:#8FD3FF;}
+  .help-card .d{font-size:11.5px;color:#A9B7CC;margin:6px 0 8px;line-height:1.5;}
+  .help-card .g{font-size:12px;font-weight:700;color:#8FD3FF;display:flex;align-items:center;gap:5px;cursor:pointer;}
+  .help-card .g svg{width:11px;height:11px;}
+
+  /* ===================== MAIN ===================== */
+  .main{flex:1;min-width:0;padding:26px 34px 60px;}
+
+  .page-header{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:18px;}
+  .page-title-block{display:flex;align-items:flex-start;gap:12px;}
+  .title-icon{
+    width:40px;height:40px;border-radius:11px;background:var(--blue-soft);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--blue);margin-top:2px;
+  }
+  .title-icon svg{width:21px;height:21px;}
+  .page-title-block h1{margin:0;font-size:24px;font-weight:800;letter-spacing:-0.015em;color:var(--navy);}
+  .page-title-block p{margin:4px 0 0;font-size:13.5px;color:var(--text-dim);font-weight:500;}
+
+  .header-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .ctrl{
+    display:flex;align-items:center;gap:7px;background:var(--panel);border:1px solid var(--border);
+    padding:8px 12px;border-radius:9px;font-size:12.5px;font-weight:600;color:var(--navy);cursor:pointer;white-space:nowrap;
+  }
+  .ctrl svg.lead{width:14px;height:14px;color:var(--text-dim);}
+  .ctrl svg.chev{width:10px;height:10px;color:var(--text-faint);}
+  .icon-btn{
+    width:38px;height:38px;border-radius:9px;background:var(--panel);border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;color:var(--text-dim);
+  }
+  .icon-btn svg{width:18px;height:18px;}
+  .badge-count{
+    position:absolute;top:-5px;right:-5px;background:var(--high-text);color:#fff;
+    font-size:9.5px;font-weight:800;width:16px;height:16px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;border:2px solid var(--bg);
+  }
+  .user-chip{display:flex;align-items:center;gap:9px;padding-left:4px;}
+  .user-avatar{
+    width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#0077B6,#0F2747);
+    color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .user-meta{line-height:1.25;}
+  .user-meta .n{font-size:13px;font-weight:700;color:var(--navy);}
+  .user-meta .r{font-size:11.5px;color:var(--text-faint);font-weight:500;}
+
+  /* ===================== SUB NAV ===================== */
+  .subnav{
+    display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid var(--border);margin-bottom:22px;
+  }
+  .subnav-tabs{display:flex;gap:6px;}
+  .subnav-tab{
+    padding:13px 4px;margin-right:22px;font-size:13.5px;font-weight:600;color:var(--text-dim);
+    border-bottom:2.5px solid transparent;cursor:pointer;
+  }
+  .subnav-tab:hover{color:var(--navy);}
+  .subnav-tab.active{color:var(--blue);border-bottom-color:var(--blue);font-weight:700;}
+  .about-link{
+    display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;color:var(--text-dim);
+    border:1px solid var(--border);padding:7px 12px;border-radius:8px;cursor:pointer;flex-shrink:0;
+  }
+  .about-link svg{width:14px;height:14px;}
+  .about-link:hover{background:var(--panel);color:var(--navy);}
+
+  /* ===================== SUMMARY CARD ===================== */
+  .summary-card{
+    background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:22px 26px;display:flex;align-items:center;gap:24px;
+    justify-content:space-between;flex-wrap:wrap;margin-bottom:22px;
+  }
+  .summary-left{display:flex;gap:16px;align-items:flex-start;max-width:600px;}
+  .summary-icon{
+    width:46px;height:46px;border-radius:50%;border:2px solid var(--blue-border);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--blue);
+  }
+  .summary-icon svg{width:22px;height:22px;}
+  .summary-left h2{margin:0 0 6px;font-size:16.5px;font-weight:800;color:var(--navy);}
+  .summary-left p{margin:0 0 8px;font-size:13px;color:var(--text-dim);line-height:1.55;}
+  .summary-left p:last-child{margin-bottom:0;}
+  .summary-left b{color:var(--navy);font-weight:700;}
+
+  .kpi-strip{display:flex;gap:10px;flex-wrap:wrap;}
+  .kpi-mini{
+    display:flex;align-items:center;gap:10px;background:var(--bg);border:1px solid var(--border);
+    border-radius:10px;padding:10px 14px;min-width:140px;
+  }
+  .kpi-mini .ic{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .kpi-mini .ic svg{width:15px;height:15px;}
+  .kpi-mini .v{font-size:16.5px;font-weight:800;color:var(--navy);line-height:1.1;}
+  .kpi-mini .l{font-size:10.8px;color:var(--text-faint);font-weight:600;margin-top:2px;}
+
+  /* ===================== PLOT CARD ===================== */
+  .plot-card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px 24px 26px;}
+  .plot-head{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:4px;}
+  .plot-head h2{margin:0;font-size:16.5px;font-weight:800;color:var(--navy);}
+  .plot-head .sub{font-size:12.5px;color:var(--text-faint);font-weight:500;margin-top:3px;}
+  .cluster-legend{display:flex;gap:14px;flex-wrap:wrap;justify-content:flex-end;}
+  .cluster-legend .item{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;color:var(--text-dim);}
+  .cluster-legend .sw{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+
+  .plot-outer{
+    position:relative;height:760px;margin-top:18px;
+    padding:18px 26px 46px 78px;
+  }
+  .plot-inner{position:relative;width:100%;height:100%;}
+
+  .zone{position:absolute;border-radius:10px;pointer-events:none;}
+  .zone-label{
+    position:absolute;font-size:10.5px;font-weight:800;letter-spacing:.03em;text-transform:uppercase;
+    color:var(--text-faint);pointer-events:none;
+  }
+
+  .gridline-x{position:absolute;top:0;bottom:0;width:1px;background:#F0F1F4;}
+  .gridline-y{position:absolute;left:0;right:0;height:1px;background:#F0F1F4;}
+  .tick-x{position:absolute;top:100%;margin-top:8px;font-size:11px;font-weight:600;color:var(--text-faint);transform:translateX(-50%);white-space:nowrap;}
+  .tick-y{position:absolute;left:0;margin-left:-10px;font-size:11px;font-weight:600;color:var(--text-faint);transform:translate(-100%,-50%);white-space:nowrap;}
+  .axis-title-x{position:absolute;top:100%;margin-top:32px;left:50%;transform:translateX(-50%);font-size:12.5px;font-weight:700;color:var(--text-dim);white-space:nowrap;}
+  .axis-title-y{
+    position:absolute;left:0;top:50%;margin-left:-58px;
+    transform:translate(-50%,-50%) rotate(-90deg);font-size:12.5px;font-weight:700;color:var(--text-dim);white-space:nowrap;
+  }
+
+  .takeaway-card{
+    position:absolute;transform:translate(-50%,-50%);
+    background:var(--panel);border:2px solid var(--border);border-left:5px solid var(--c, var(--blue));
+    border-radius:10px;padding:11px 14px;cursor:pointer;box-shadow:var(--shadow);
+    width:168px;text-align:left;
+    transition:width .26s ease, height .26s ease, box-shadow .24s ease, border-color .24s ease, opacity .24s ease, filter .24s ease, transform .05s;
+    z-index:2;
+  }
+  .takeaway-card:hover{border-color:var(--c, var(--blue));box-shadow:0 6px 20px -10px rgba(15,39,71,.25);}
+  .takeaway-card .tc-name{font-size:12.8px;font-weight:800;color:var(--navy);line-height:1.35;}
+  .takeaway-card .tc-cluster{font-size:10px;font-weight:700;color:var(--c,var(--blue));text-transform:uppercase;letter-spacing:.03em;margin-top:4px;}
+
+  .plot-inner.has-expanded .takeaway-card:not(.expanded){opacity:.32;filter:grayscale(.25);}
+
+  .takeaway-card.expanded{
+    width:400px;z-index:20;border-color:var(--c,var(--blue));box-shadow:0 22px 44px -18px rgba(15,39,71,.35);
+    cursor:default;
+  }
+  .tc-collapsed-only{display:block;}
+  .takeaway-card.expanded .tc-collapsed-only{display:none;}
+  .tc-expanded-only{display:none;}
+  .takeaway-card.expanded .tc-expanded-only{display:block;}
+
+  .tc-exp-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;}
+  .tc-exp-title{font-size:15.5px;font-weight:800;color:var(--navy);line-height:1.3;}
+  .tc-exp-close{
+    width:22px;height:22px;border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+    color:var(--text-faint);cursor:pointer;
+  }
+  .tc-exp-close:hover{background:var(--bg);color:var(--navy);}
+  .tc-exp-close svg{width:13px;height:13px;}
+
+  .tc-section-label{font-size:10px;font-weight:800;color:var(--text-faint);text-transform:uppercase;letter-spacing:.03em;margin:12px 0 7px;}
+  .tc-section-label:first-of-type{margin-top:0;}
+  .tc-why{font-size:12.3px;color:var(--text-dim);line-height:1.55;}
+  .tc-issue-list{display:flex;flex-wrap:wrap;gap:6px;}
+  .tc-issue-chip{
+    background:var(--bg);border:1px solid var(--border);color:var(--navy);
+    font-size:11px;font-weight:600;padding:4px 9px;border-radius:999px;
+  }
+  .tc-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .tc-stat{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:9px 11px;}
+  .tc-stat .v{font-size:17px;font-weight:800;color:var(--navy);}
+  .tc-stat .v.up{color:var(--low-text);}
+  .tc-stat .v.down{color:var(--high-text);}
+  .tc-stat .l{font-size:10.3px;color:var(--text-faint);font-weight:600;margin-top:2px;}
+  .tc-affected-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .tc-affected-chip{
+    display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--border);
+    border-radius:9px;padding:8px 11px;flex:1;min-width:120px;
+  }
+  .tc-affected-chip svg{width:14px;height:14px;color:var(--text-faint);flex-shrink:0;}
+  .tc-affected-chip .v{font-size:12.5px;font-weight:700;color:var(--navy);}
+  .tc-affected-chip .l{font-size:9.8px;color:var(--text-faint);font-weight:600;}
+  .tc-action{
+    display:flex;gap:9px;align-items:flex-start;background:var(--blue-soft);border:1px solid var(--blue-border);
+    border-radius:10px;padding:11px 12px;margin-top:12px;
+  }
+  .tc-action svg{width:15px;height:15px;color:var(--blue);flex-shrink:0;margin-top:1px;}
+  .tc-action .t{font-size:11.8px;font-weight:700;color:var(--navy);line-height:1.4;}
+  .tc-action .t span{color:var(--blue);font-weight:800;}
+
+  @media (max-width:1180px){
+    .plot-outer{height:820px;}
+  }
+  @media (max-width:860px){ .sidebar{display:none;} }
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="sidebar">
+    <div class="logo-row">
+      <svg viewBox="0 0 40 40" fill="none">
+        <path d="M20 3L4 10v9c0 10 6.8 17.5 16 20 9.2-2.5 16-10 16-20v-9L20 3z" fill="#fff" fill-opacity="0.08" stroke="#fff" stroke-width="1.4"/>
+        <path d="M13 19l4-8 3 6 3-6 4 8" stroke="#8FD3FF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="lt">
+        <div class="l1">MONASH</div>
+        <div class="l2">UNIVERSITY</div>
+      </div>
+    </div>
+
+    <div class="product-block">
+      <div class="name">UniPulse</div>
+      <div class="desc">Social Listening for<br>International Student Recruitment</div>
+    </div>
+
+    <nav class="side-nav">
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="9" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="3" width="7" height="5" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="14" y="12" width="7" height="9" rx="1.5" stroke="currentColor" stroke-width="1.8"/><rect x="3" y="16" width="7" height="5" rx="1.5" stroke="currentColor" stroke-width="1.8"/></svg>Overview</div>
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.4 8.4 0 01-9.5 8.3A8.5 8.5 0 013 11.5 8.4 8.4 0 0111.5 3a8.4 8.4 0 019.5 8.5z" stroke="currentColor" stroke-width="1.8"/></svg>Conversations</div>
+      <div class="nav-item active"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18h6M10 22h4M12 2a6.5 6.5 0 00-4 11.6c.6.5 1 1.2 1 2.1v.3h6v-.3c0-.9.4-1.6 1-2.1A6.5 6.5 0 0012 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>Insights</div>
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18" stroke="currentColor" stroke-width="1.8"/></svg>Countries</div>
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.7 21a2 2 0 01-3.4 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Alerts</div>
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none"><path d="M7 3h8l5 5v13a1 1 0 01-1 1H7a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 13h6M9 17h6M9 9h2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Reports</div>
+      <div class="nav-item"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M19.4 15a1.7 1.7 0 00.3 1.9l.1.1a2 2 0 11-2.9 2.9l-.1-.1a1.7 1.7 0 00-1.9-.3 1.7 1.7 0 00-1 1.6V21a2 2 0 11-4 0v-.2a1.7 1.7 0 00-1-1.6 1.7 1.7 0 00-1.9.3l-.1.1a2 2 0 11-2.9-2.9l.1-.1a1.7 1.7 0 00.3-1.9 1.7 1.7 0 00-1.6-1H3a2 2 0 110-4h.2a1.7 1.7 0 001.6-1 1.7 1.7 0 00-.3-1.9l-.1-.1a2 2 0 112.9-2.9l.1.1a1.7 1.7 0 001.9.3H9a1.7 1.7 0 001-1.6V3a2 2 0 114 0v.2a1.7 1.7 0 001 1.6 1.7 1.7 0 001.9-.3l.1-.1a2 2 0 112.9 2.9l-.1.1a1.7 1.7 0 00-.3 1.9V9a1.7 1.7 0 001.6 1h.2a2 2 0 110 4h-.2a1.7 1.7 0 00-1.6 1z" stroke="currentColor" stroke-width="1.5"/></svg>Settings</div>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <button class="create-alert-btn"><svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>Create Alert</button>
+      <div class="help-card">
+        <div class="t"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M9.5 9.5a2.5 2.5 0 014.8 1c0 1.5-2 1.7-2.3 3M12 17h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Need help?</div>
+        <div class="d">View our quick start guide or contact support.</div>
+        <div class="g">View Guide <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <main class="main">
+
+    <div class="page-header">
+      <div class="page-title-block">
+        <div class="title-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M9 18h6M10 22h4M12 2a6.5 6.5 0 00-4 11.6c.6.5 1 1.2 1 2.1v.3h6v-.3c0-.9.4-1.6 1-2.1A6.5 6.5 0 0012 2z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
+        <div>
+          <h1>Insights</h1>
+          <p>AI-powered analysis to help you make data-driven decisions.</p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <div class="ctrl"><svg class="lead" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 10h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>Last 30 Days (Jul 10 – Aug 8, 2025)<svg class="chev" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="ctrl">All Regions<svg class="chev" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="ctrl">All Sources<svg class="chev" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="ctrl">All Languages<svg class="chev" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="icon-btn"><span class="badge-count">3</span><svg viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M13.7 21a2 2 0 01-3.4 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+        <div class="user-chip">
+          <div class="user-avatar">SC</div>
+          <div class="user-meta"><div class="n">Sarah Chen</div><div class="r">Marketing Manager</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="subnav">
+      <div class="subnav-tabs">
+        <div class="subnav-tab">SWOT Analysis</div>
+        <div class="subnav-tab">Strategic Opportunities</div>
+        <div class="subnav-tab active">Key Takeaways</div>
+        <div class="subnav-tab">AI Recommendations</div>
+        <div class="subnav-tab">Strategic Recommendations</div>
+      </div>
+      <div class="about-link"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M12 11v6M12 7h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>About this analysis</div>
+    </div>
+
+    <!-- ===================== SUMMARY CARD ===================== -->
+    <div class="summary-card">
+      <div class="summary-left">
+        <div class="summary-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2l1.8 5.6L19 9l-5.2 1.4L12 16l-1.8-5.6L5 9l5.2-1.4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+        <div>
+          <h2>Key Takeaways</h2>
+          <p>Across <b>20 tracked opportunities and issues</b> (<b>13,552 total interactions</b>), conversations from international students cluster into <b>7 major themes</b>. The two most urgent are <b>Ease the Cost-of-Living Burden</b> and <b>Simplify the Visa Journey</b> — both carry some of the highest conversation volume while running well below neutral sentiment.</p>
+          <p>On the positive side, <b>Double Down on Student Support</b> is Monash's strongest asset, with sentiment well above the average — a theme worth leading with in recruitment marketing rather than just fixing what's broken.</p>
+        </div>
+      </div>
+      <div class="kpi-strip">
+        <div class="kpi-mini">
+          <div class="ic" style="background:var(--blue-soft);color:var(--blue);"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2l1.8 5.6L19 9l-5.2 1.4L12 16l-1.8-5.6L5 9l5.2-1.4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+          <div><div class="v">7</div><div class="l">Key Takeaways</div></div>
+        </div>
+        <div class="kpi-mini">
+          <div class="ic" style="background:#F1E9FB;color:#7B4FCB;"><svg viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.4 8.4 0 01-9.5 8.3A8.5 8.5 0 013 11.5 8.4 8.4 0 0111.5 3a8.4 8.4 0 019.5 8.5z" stroke="currentColor" stroke-width="1.8"/></svg></div>
+          <div><div class="v">13,552</div><div class="l">Total Interactions</div></div>
+        </div>
+        <div class="kpi-mini">
+          <div class="ic" style="background:var(--low-bg);color:var(--low-text);"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+          <div><div class="v">49%</div><div class="l">Avg. Sentiment Rate</div></div>
+        </div>
+        <div class="kpi-mini">
+          <div class="ic" style="background:var(--high-bg);color:var(--high-text);"><svg viewBox="0 0 24 24" fill="none"><path d="M12 9v4m0 4h.01M10.3 3.9L2.5 17.5A1.6 1.6 0 003.9 20h16.2a1.6 1.6 0 001.4-2.5L13.7 3.9a1.6 1.6 0 00-2.4 0z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
+          <div><div class="v">2</div><div class="l">Watch Closely</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== TAKEAWAY CLUSTER PLOT ===================== -->
+    <div class="plot-card">
+      <div class="plot-head">
+        <div>
+          <h2>Takeaway Map</h2>
+          <div class="sub">Sentiment Rate vs. Volume of Interactions — click a card for the full picture</div>
+        </div>
+        <div class="cluster-legend" id="clusterLegend"></div>
+      </div>
+
+      <div class="plot-outer">
+        <div class="plot-inner" id="clusterPlot"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const CLUSTER_COLOR = {
+  "Visa & Immigration":   "#0077B6",
+  "Cost & Living":        "#D64550",
+  "Brand & Visibility":   "#7B4FCB",
+  "Student Experience":   "#28A667",
+  "Application Journey":  "#C4831A",
+  "Post-Study Outcomes":  "#1B8FA8",
+  "Academic Reputation":  "#B85C9E",
+};
+
+const TAKEAWAYS = [
+  {
+    id:"visa", name:"Simplify the Visa Journey", cluster:"Visa & Immigration",
+    volume:3121, sentiment:37, volumeMom:18, sentimentMom:-6,
+    market:"India", channel:"TikTok",
+    why:"Visa processing delays are the single largest driver of negative sentiment among prospective students, and conversation volume has grown steadily over the past quarter.",
+    action:"Launch a dedicated Visa Support Hub",
+    issues:["Visa Processing Delays","Post-Study Work Rights Confusion","Part-Time Work Rights Clarity","Dependent Visa Policy Uncertainty"]
+  },
+  {
+    id:"cost", name:"Ease the Cost-of-Living Burden", cluster:"Cost & Living",
+    volume:3460, sentiment:37, volumeMom:9, sentimentMom:-3,
+    market:"China", channel:"Reddit",
+    why:"Rising accommodation costs near Clayton campus and confusion around scholarships are compounding into broad affordability anxiety — the highest-volume theme in this analysis.",
+    action:"Partner with accommodation providers on availability & cost",
+    issues:["Accommodation Affordability","Scholarship Info Confusion","Cost-of-Living Anxiety"]
+  },
+  {
+    id:"brand", name:"Amplify Our Voice in Key Markets", cluster:"Brand & Visibility",
+    volume:1990, sentiment:57, volumeMom:14, sentimentMom:2,
+    market:"Vietnam", channel:"X (Twitter)",
+    why:"Interest in Monash is growing quickly in India and Vietnam, but competitors dominate the conversation there — this reads as a visibility gap, not a satisfaction problem.",
+    action:"Run country-specific campaigns in India & Vietnam",
+    issues:["Low Visibility in India & Vietnam","Alumni Success Stories Underused","Social Media Presence Gap","Negative Review Platform Sentiment"]
+  },
+  {
+    id:"student", name:"Double Down on Student Support", cluster:"Student Experience",
+    volume:2453, sentiment:66, volumeMom:5, sentimentMom:4,
+    market:"Malaysia", channel:"Forums",
+    why:"Supportive staff and orientation experiences are consistently the most positively discussed topics — a genuine differentiator that's currently under-leveraged in marketing.",
+    action:"Feature real student testimonials in recruitment content",
+    issues:["Supportive Staff Reputation","Campus Safety Concerns","Mental Health Support Awareness","Orientation & Onboarding Experience"]
+  },
+  {
+    id:"poststudy", name:"Showcase Career & Research Pathways", cluster:"Post-Study Outcomes",
+    volume:752, sentiment:60, volumeMom:7, sentimentMom:1,
+    market:"China", channel:"News",
+    why:"Career outcomes and research partnership mentions are lower in volume but skew positive — an under-used proof point for prospective students weighing return on investment.",
+    action:"Highlight alumni career outcomes in campaigns",
+    issues:["Career Outcomes Perception Gap","Research & Industry Partnerships"]
+  },
+  {
+    id:"application", name:"Streamline the Application Experience", cluster:"Application Journey",
+    volume:989, sentiment:53, volumeMom:3, sentimentMom:-1,
+    market:"India", channel:"Forums",
+    why:"Confusion during the application process and inconsistent agent quality are creating friction before students even arrive — more an operational fix than a sentiment one.",
+    action:"Simplify the application portal & agent guidance",
+    issues:["Application Process Complexity","Education Agent Relationship Quality"]
+  },
+  {
+    id:"academic", name:"Close the Course Quality Gap", cluster:"Academic Reputation",
+    volume:787, sentiment:54, volumeMom:2, sentimentMom:0,
+    market:"China", channel:"News",
+    why:"Course quality perception trails top competitors slightly, though sentiment is only mildly negative — a longer-term brand investment rather than an urgent fire to put out.",
+    action:"Publish outcome-based course rankings & reviews",
+    issues:["Course Quality vs Competitors"]
+  },
+];
+
+const MAX_VOLUME = 4000; // fixed headroom above the highest cluster (3,460)
+let expandedId = null;
+
+function renderLegend(){
+  const el = document.getElementById('clusterLegend');
+  el.innerHTML = Object.entries(CLUSTER_COLOR).map(([name,color])=>
+    `<span class="item"><span class="sw" style="background:${color};"></span>${name}</span>`
+  ).join('');
+}
+
+function fmtInt(n){ return Math.round(n).toLocaleString('en-US'); }
+
+function buildStaticLayer(container, W, H){
+  // zones (nice-to-have background shading)
+  const watchZone = document.createElement('div');
+  watchZone.className = 'zone';
+  watchZone.style.left = '0px'; watchZone.style.top = '0px';
+  watchZone.style.width = (W*0.5)+'px'; watchZone.style.height = (H*0.42)+'px';
+  watchZone.style.background = 'rgba(214,69,80,0.06)';
+  container.appendChild(watchZone);
+  const watchLabel = document.createElement('div');
+  watchLabel.className = 'zone-label';
+  watchLabel.textContent = 'Watch closely';
+  watchLabel.style.left = '14px'; watchLabel.style.top = '10px';
+  watchLabel.style.color = '#D64550';
+  container.appendChild(watchLabel);
+
+  const leverageZone = document.createElement('div');
+  leverageZone.className = 'zone';
+  leverageZone.style.left = (W*0.5)+'px'; leverageZone.style.top = '0px';
+  leverageZone.style.width = (W*0.5)+'px'; leverageZone.style.height = (H*0.42)+'px';
+  leverageZone.style.background = 'rgba(40,166,103,0.06)';
+  container.appendChild(leverageZone);
+  const leverageLabel = document.createElement('div');
+  leverageLabel.className = 'zone-label';
+  leverageLabel.textContent = 'Leverage & amplify';
+  leverageLabel.style.right = '14px'; leverageLabel.style.top = '10px'; leverageLabel.style.left = 'auto';
+  leverageLabel.style.color = '#28A667';
+  container.appendChild(leverageLabel);
+
+  // x gridlines + ticks (0,25,50,75,100%)
+  for(let p=0; p<=100; p+=25){
+    const x = (p/100)*W;
+    const gl = document.createElement('div');
+    gl.className = 'gridline-x';
+    gl.style.left = x+'px';
+    container.appendChild(gl);
+    const tick = document.createElement('div');
+    tick.className = 'tick-x';
+    tick.style.left = x+'px';
+    tick.textContent = p+'%';
+    container.appendChild(tick);
+  }
+  const axisX = document.createElement('div');
+  axisX.className = 'axis-title-x';
+  axisX.textContent = 'Sentiment Rate  →';
+  container.appendChild(axisX);
+
+  // y gridlines + ticks
+  const yStep = 1000;
+  for(let v=0; v<=MAX_VOLUME; v+=yStep){
+    const y = H - (v/MAX_VOLUME)*H;
+    const gl = document.createElement('div');
+    gl.className = 'gridline-y';
+    gl.style.top = y+'px';
+    container.appendChild(gl);
+    const tick = document.createElement('div');
+    tick.className = 'tick-y';
+    tick.style.top = y+'px';
+    tick.textContent = fmtInt(v);
+    container.appendChild(tick);
+  }
+  const axisY = document.createElement('div');
+  axisY.className = 'axis-title-y';
+  axisY.textContent = 'Volume of Interactions  →';
+  container.appendChild(axisY);
+}
+
+function computeLayout(W, H){
+  const CARD_W = 168, CARD_H = 62;
+  const pts = TAKEAWAYS.map(t=>({
+    id:t.id,
+    x: (t.sentiment/100) * W,
+    y: H - (t.volume/MAX_VOLUME) * H,
+  }));
+
+  // simple iterative repulsion so collapsed cards don't fully overlap
+  const minDX = CARD_W + 14, minDY = CARD_H + 14;
+  for(let iter=0; iter<60; iter++){
+    for(let i=0;i<pts.length;i++){
+      for(let j=i+1;j<pts.length;j++){
+        const a=pts[i], b=pts[j];
+        const dx = b.x-a.x, dy = b.y-a.y;
+        const overlapX = minDX - Math.abs(dx);
+        const overlapY = minDY - Math.abs(dy);
+        if(overlapX>0 && overlapY>0){
+          const pushX = overlapX/2 * (dx===0?1:Math.sign(dx || 1));
+          const pushY = overlapY/2 * (dy===0?1:Math.sign(dy || 1));
+          a.x -= pushX*0.5; b.x += pushX*0.5;
+          a.y -= pushY*0.5; b.y += pushY*0.5;
+        }
+      }
+    }
+  }
+  // clamp within bounds
+  const pad = 8;
+  pts.forEach(p=>{
+    p.x = Math.max(CARD_W/2+pad, Math.min(W-CARD_W/2-pad, p.x));
+    p.y = Math.max(CARD_H/2+pad, Math.min(H-CARD_H/2-pad, p.y));
+  });
+  const map = {};
+  pts.forEach(p=> map[p.id]=p);
+  return map;
+}
+
+function renderCards(container, layout, W, H){
+  TAKEAWAYS.forEach(t=>{
+    const pos = layout[t.id];
+    const color = CLUSTER_COLOR[t.cluster];
+    const card = document.createElement('div');
+    card.className = 'takeaway-card';
+    card.id = 'card-'+t.id;
+    card.style.setProperty('--c', color);
+    card.style.left = pos.x+'px';
+    card.style.top = pos.y+'px';
+    card.dataset.baseLeft = pos.x;
+    card.dataset.baseTop = pos.y;
+
+    card.innerHTML = `
+      <div class="tc-collapsed-only">
+        <div class="tc-name">${t.name}</div>
+        <div class="tc-cluster">${t.cluster}</div>
+      </div>
+      <div class="tc-expanded-only">
+        <div class="tc-exp-head">
+          <div class="tc-exp-title">${t.name}</div>
+          <div class="tc-exp-close" data-close="${t.id}"><svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></div>
+        </div>
+
+        <div class="tc-section-label">Why This Matters</div>
+        <div class="tc-why">${t.why}</div>
+
+        <div class="tc-section-label">Issue Areas</div>
+        <div class="tc-issue-list">${t.issues.map(i=>`<span class="tc-issue-chip">${i}</span>`).join('')}</div>
+
+        <div class="tc-section-label">Key Stats</div>
+        <div class="tc-stats-grid">
+          <div class="tc-stat"><div class="v">${fmtInt(t.volume)}</div><div class="l">Volume of Interactions</div></div>
+          <div class="tc-stat"><div class="v">${t.sentiment}%</div><div class="l">Sentiment Rate</div></div>
+          <div class="tc-stat"><div class="v ${t.volumeMom>=0?'up':'down'}">${t.volumeMom>=0?'+':''}${t.volumeMom}%</div><div class="l">Volume, MoM</div></div>
+          <div class="tc-stat"><div class="v ${t.sentimentMom>=0?'up':'down'}">${t.sentimentMom>=0?'+':''}${t.sentimentMom}pp</div><div class="l">Sentiment, MoM</div></div>
+        </div>
+
+        <div class="tc-section-label">Most Affected</div>
+        <div class="tc-affected-row">
+          <div class="tc-affected-chip">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18" stroke="currentColor" stroke-width="1.6"/></svg>
+            <div><div class="v">${t.market}</div><div class="l">Top market</div></div>
+          </div>
+          <div class="tc-affected-chip">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.4 8.4 0 01-9.5 8.3A8.5 8.5 0 013 11.5 8.4 8.4 0 0111.5 3a8.4 8.4 0 019.5 8.5z" stroke="currentColor" stroke-width="1.8"/></svg>
+            <div><div class="v">${t.channel}</div><div class="l">Loudest channel</div></div>
+          </div>
+        </div>
+
+        <div class="tc-action">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 2l1.8 5.6L19 9l-5.2 1.4L12 16l-1.8-5.6L5 9l5.2-1.4z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          <div class="t"><span>Suggested next step:</span> ${t.action}</div>
+        </div>
+      </div>
+    `;
+
+    card.addEventListener('click', (e)=>{
+      if(e.target.closest('[data-close]')){ collapseAll(); return; }
+      if(expandedId === t.id) { collapseAll(); return; }
+      expandCard(t.id, W, H);
+    });
+
+    container.appendChild(card);
+  });
+}
+
+function expandCard(id, W, H){
+  collapseAll(false);
+  expandedId = id;
+  const card = document.getElementById('card-'+id);
+  const plot = document.getElementById('clusterPlot');
+  plot.classList.add('has-expanded');
+  card.classList.add('expanded');
+
+  const baseLeft = parseFloat(card.dataset.baseLeft);
+  const baseTop = parseFloat(card.dataset.baseTop);
+  const EXP_W = 400, EXP_H_APPROX = 560;
+  const clampedLeft = Math.max(EXP_W/2+10, Math.min(W-EXP_W/2-10, baseLeft));
+  const clampedTop = Math.max(EXP_H_APPROX/2+10, Math.min(H-EXP_H_APPROX/2-10, baseTop));
+  card.style.left = clampedLeft+'px';
+  card.style.top = clampedTop+'px';
+}
+
+function collapseAll(clearId=true){
+  document.querySelectorAll('.takeaway-card.expanded').forEach(card=>{
+    card.classList.remove('expanded');
+    card.style.left = card.dataset.baseLeft+'px';
+    card.style.top = card.dataset.baseTop+'px';
+  });
+  document.getElementById('clusterPlot').classList.remove('has-expanded');
+  if(clearId) expandedId = null;
+}
+
+function buildPlot(){
+  const container = document.getElementById('clusterPlot');
+  container.innerHTML = '';
+  const W = container.clientWidth;
+  const H = container.clientHeight;
+  buildStaticLayer(container, W, H);
+  const layout = computeLayout(W, H);
+  renderCards(container, layout, W, H);
+
+  container.addEventListener('click', (e)=>{
+    if(e.target === container) collapseAll();
+  });
+}
+
+renderLegend();
+buildPlot();
+
+let resizeTimer;
+window.addEventListener('resize', ()=>{
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(buildPlot, 200);
+});
+</script>
+
+</body>
+</html>
